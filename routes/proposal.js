@@ -97,6 +97,15 @@ router.put('/vote/:id_prop/:id_option',async (req,res)=>{
 //     }
 // });
 
+router.get('/fetchresults/:id',async (req,res)=>{
+    try {
+        let proposal=await Proposals.findById(req.params.id);
+        return res.send(proposal)
+    } catch (error) {
+        return res.status(500).send("Some error occured.");
+    }
+});
+
 //adding a new proposal: POST: /api/proposal/create  --login reqq
 router.post('/createprop',
     async (req,res)=>{
