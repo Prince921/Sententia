@@ -28,7 +28,7 @@ contract AAVEProposal {
 
      event Voted( address indexed voter, uint256 timestamp );
      event ProposalCreated ( address indexed maker, string indexed cid  ) ;
-
+      require(aave.balanceOf(msg.sender) > 0, "Invalid User");
 
      modifier checkToken(){
          require(aave.balanceOf(msg.sender) > 0, "Invalid User");
