@@ -5,7 +5,7 @@ html {
 
 body {
   padding: 0;
-  font-family: -apple-system, Inter, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
+   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
