@@ -8,7 +8,7 @@ const Proposals = require('../models/Proposal');
 const Options = require('../models/Option');
 
 //fetch all proposals: GET: /api/proposal/fetchallproposals
-router.get('/fetchallproposals/:protocol',async (req,res)=>{
+router.get('/fetchallproposals/:protocol',sync (req,res)=>{
     try {
         req_adds=[]
         const proposals=await Proposals.find({});  //fetching all notes 
@@ -20,7 +20,7 @@ router.get('/fetchallproposals/:protocol',async (req,res)=>{
                 req_adds.push(json)
             }
         }
-        console.log(req_adds)
+        console.log(req_adds);
         return res.send(req_adds);
     } catch (error) {
         return res.status(500).send("Some error occured.");
