@@ -191,5 +191,23 @@ router.post('/createprop',
 //         res.status(500).send("Some error occured.");
 //     }
 // });
+router.get('/fetchallproposals/:protocol',sync (req,res)=>{
+    try {
+        req_adds=[]
+        const proposals=await Proposals.find({});  //fetching all notes 
+        // console.log(proposals)
+        for(let i=0;i<proposals.length;i++){
+            if(proposals[i].protocol==req.params.protocol){
+                let json = {"address":proposals[i].sc_address, "abi":proposals[i].abi}
+                console.log("json")
+                req_adds.push(json)
+            }
+        }
+        console.log(req_adds);
+        return res.send(req_adds);
+    } catch (error) {
+        return res.status(500).send("Some error occured.");
+    }
+});
 
 module.exports=router;
