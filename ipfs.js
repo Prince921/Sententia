@@ -1,35 +1,92 @@
-var axios = require('axios');
-async function upload(json) {
-    var data = JSON.stringify({
-      "pinataOptions": {
-        "cidVersion": 1
-      },
-      "pinataMetadata": {
-        "name": "off_chain_zk_voting",
-        "keyvalues": json
-      },
-      "pinataContent":json
-    });
-    var config = {
-      method: 'post',
-      url: 'https://api.pinata.cloud/pinning/pinJSONToIPFS',
-      headers: { 
-        'Content-Type': 'application/json', 
-        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJhNWM2ZDhiNS03NmYwLTRjNTUtOTY0NC1kOTIzNmMwZTVjNTgiLCJlbWFpbCI6ImphaW5ldGlrc2hhQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJwaW5fcG9saWN5Ijp7InJlZ2lvbnMiOlt7ImlkIjoiRlJBMSIsImRlc2lyZWRSZXBsaWNhdGlvbkNvdW50IjoxfSx7ImlkIjoiTllDMSIsImRlc2lyZWRSZXBsaWNhdGlvbkNvdW50IjoxfV0sInZlcnNpb24iOjF9LCJtZmFfZW5hYmxlZCI6ZmFsc2UsInN0YXR1cyI6IkFDVElWRSJ9LCJhdXRoZW50aWNhdGlvblR5cGUiOiJzY29wZWRLZXkiLCJzY29wZWRLZXlLZXkiOiJjYjk5ZjRhOGU2ZGIzM2I2YTA5OCIsInNjb3BlZEtleVNlY3JldCI6ImFjNjJhOTQ5NzRlYTcwMTc0Zjg4YzQwYTRhM2UzMTRkOWY1YzU0NGVhNjIwNzMzZjY4NTcwODBlZDQzZjFhMWYiLCJpYXQiOjE2NjExMDM5OTR9.GKLNPCS88TmAynM3q08Ib4U7f83ttUnBl6veZdicxC8'
-      },
-      data : data
-    };
-    const res = await axios(config);
-    let hash = res.data.IpfsHash
-    console.log(hash);
-    return hash
-  }
+const mongoose=require('mongoose');
 
-  async function f() {
-    const res = await upload({"data":"fjefje"})
-    return res
-  }
+const OptionSchema=new mongoose.Schema({
+    option_id:{
+        type:String, //mongoose.Schema.Types.ObjectId
+        required:true
+    },
+    proposal_id:{type:mongoose.Schema.Types.ObjectId},
+    title:{
+        type:String,
+        required:true
+    },
+    description:{
+        type:String,
+        required:true
+    },
+    count:{
+        type:Number,
+        default:0
+    },
+    voters:[
+        {type:String} //array of addresses of voters
+    ],
+    
+});
 
-let l = f()
+module.exports=mongoose.model('options',OptionSchema);
+//ROUTE3: updating note: PUT: /api/notes/updatenote:id  --login reqq
+router.put('/updatenote/:id',
+    async (req,res)=>{
 
-console.log(l)
+    try{
+    
+    const {title,description,ctc,deadline,location,role,cg,tenth,twelfth,branch}=req.body;
+    //creating new note object:
+    newNote={};
+    if(title){newNote.title=title;}
+    if(description){newNote.description=description;}
+    if(ctc){newNote.ctc=ctc;}
+    if(deadline){newNote.deadline=deadline;}
+    if(location){newNote.location=location;}
+    if(role){newNote.role=role;}
+    if(cg){newNote.cg=cg;}
+    if(tenth){newNote.tenth=tenth;}
+    if(twelfth){newNote.twelfth=twelfth;}
+    if(branch){newNote.branch=branch;}
+    
+    //find the note to be updated and update it:
+    let note=await Notes.findById(req.params.id);
+
+    //check if note exists or not:
+    if(!note){
+        return res.status(404).send("Note not found");
+    }
+
+
+    //now note exists and user is corretc:
+    note=await Notes.findByIdAndUpdate(req.params.id,{$set:newNote},{new:true});
+    res.json(note);
+    }
+    catch(err){
+        console.log(err);
+        res.status(500).send("Some error occured.");
+    }
+});
+
+//ROUTE4: deleting a  note: DELETE: /api/notes/deletenote/:id  --login reqq
+router.delete('/deletenote/:id',
+    async (req,res)=>{
+
+    try{
+    
+    //find the note to be deleted and delete it:
+    let note=await Notes.findById(req.params.id);
+    
+    //check if note exists or not:
+    if(!note){
+        return res.status(404).send("Note not found");
+    }
+
+    //now note exists and user is corretc:
+    note=await Notes.findByIdAndDelete(req.params.id);
+    res.send({"Success":"Note deleted successfully",note:note});
+
+    // let user=await Users.findById(req.user.id);
+    // applnote=await user.appliedTo.findByIdAndDelete(req.params.id);
+    }
+    catch(err){
+        console.log(err);
+        res.status(500).send("Some error occured.");
+    }
+});
